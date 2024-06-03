@@ -1,4 +1,5 @@
-'use client'
+'use client';
+
 import React from 'react';
 import PrivateRoute from '../components/PrivateRoute';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip, Spinner } from "@nextui-org/react";
@@ -131,7 +132,7 @@ export default function Dashboard() {
                 setIsLoading(false);
             } catch (error) {
                 console.error('Error fetching data:', error);
-                setError(error || 'Ocurrió un error al obtener los registros');
+                setError(error instanceof Error ? error.message : 'Ocurrió un error al obtener los registros');
                 setIsLoading(false);
             }
         };
@@ -153,11 +154,13 @@ export default function Dashboard() {
 
         switch (columnKey) {
             case 'date':
-                const fecha = new Date(cellValue);
-                const fechaFormateada = `${fecha.getUTCFullYear()}-${agregarCeros(fecha.getUTCMonth() + 1)}-${agregarCeros(fecha.getUTCDate())}`;
-                return (
-                    <p>{fechaFormateada}</p>
-                );
+                if (typeof cellValue === 'string' || typeof cellValue === 'number') {
+                    const fecha = new Date(cellValue);
+                    const fechaFormateada = `${fecha.getUTCFullYear()}-${agregarCeros(fecha.getUTCMonth() + 1)}-${agregarCeros(fecha.getUTCDate())}`;
+                    return (
+                        <p>{fechaFormateada}</p>
+                    );
+                  }
             case 'parkedCars':
                 return (
                     <p>{registro.parkedCars.length}</p>

@@ -37,7 +37,7 @@ async function calculateTotal(_id: any) {
 };
 
 
-async function getCarros(_id) {
+async function getCarros(_id:any) {
     try {
         console.log("getCarros", _id);
         const token = localStorage.getItem('token');
@@ -120,7 +120,7 @@ async function addCar(plateNumber: any) {
     }
 };
 
-const agregarCeros = (numero) => {
+const agregarCeros = (numero:any) => {
     return numero < 10 ? `0${numero}` : `${numero}`;
 };
 
