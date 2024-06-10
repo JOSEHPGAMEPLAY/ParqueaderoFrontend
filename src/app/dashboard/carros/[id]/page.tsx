@@ -7,6 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip, Spinner, Button, Dropdown, DropdownTrigger, SortDescriptor } from "@nextui-org/react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
+import { ToastContainer, toast } from 'react-toastify';
 
 interface Carro {
     _id: string;
@@ -29,10 +30,11 @@ async function calculateTotal(_id: any) {
     } catch (error) {
         console.error('Error fetching data:', error);
         if (axios.isAxiosError(error) && error.response) {
-            throw new Error(error.response.data.message || 'Error en la solicitud');
+            toast.error(error.response.data.message || 'Error en la solicitud');
         } else {
-            throw new Error('Error de red o del servidor');
+            toast.error('Error de red o del servidor');
         }
+        throw error;
     }
 };
 
@@ -53,10 +55,11 @@ async function getCarros(_id:any) {
     } catch (error) {
         console.error('Error fetching data:', error);
         if (axios.isAxiosError(error) && error.response) {
-            throw new Error(error.response.data.message || 'Error en la solicitud');
+            toast.error(error.response.data.message || 'Error en la solicitud');
         } else {
-            throw new Error('Error de red o del servidor');
+            toast.error('Error de red o del servidor');
         }
+        throw error;
     }
 };
 
@@ -73,10 +76,11 @@ async function deleteCar(_id: any) {
     } catch (error) {
         console.error('Error fetching data:', error);
         if (axios.isAxiosError(error) && error.response) {
-            throw new Error(error.response.data.message || 'Error en la solicitud');
+            toast.error(error.response.data.message || 'Error en la solicitud');
         } else {
-            throw new Error('Error de red o del servidor');
+            toast.error('Error de red o del servidor');
         }
+        throw error;
     }
 };
 
@@ -93,10 +97,11 @@ async function exitCar(plateNumber: any) {
     } catch (error) {
         console.error('Error fetching data:', error);
         if (axios.isAxiosError(error) && error.response) {
-            throw new Error(error.response.data.message || 'Error en la solicitud');
+            toast.error(error.response.data.message || 'Error en la solicitud');
         } else {
-            throw new Error('Error de red o del servidor');
+            toast.error('Error de red o del servidor');
         }
+        throw error;
     }
 };
 
@@ -113,10 +118,11 @@ async function addCar(plateNumber: any) {
     } catch (error) {
         console.error('Error fetching data:', error);
         if (axios.isAxiosError(error) && error.response) {
-            throw new Error(error.response.data.message || 'Error en la solicitud');
+            toast.error(error.response.data.message || 'Error en la solicitud');
         } else {
-            throw new Error('Error de red o del servidor');
+            toast.error('Error de red o del servidor');
         }
+        throw error;
     }
 };
 
@@ -337,8 +343,7 @@ export default function Carros() {
                     )}
                 </TableBody>
             </Table>
-            {error && <p className='text-red-500 text-xl'>{error}</p>}
-
+            <ToastContainer />
             <Modal
                 isOpen={isOpenModalDelete}
                 onClose={onCloseModalDelete}
