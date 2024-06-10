@@ -261,6 +261,7 @@ export default function Carros() {
                 await addCar(plateCar);
                 const carros = await getCarros(id);
                 setCarros(carros);
+                setPlateCar('');
                 onCloseModalCreate();
             } catch (error) {
                 console.error('Error deleting data:', error);
