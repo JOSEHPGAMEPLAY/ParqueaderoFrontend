@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 async function createRegisters() {
     try {
         const token = localStorage.getItem('token');
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/dailyParkingRecord`, {},{
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/dailyParkingRecord`, {}, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -113,6 +113,12 @@ const agregarCeros = (numero: number): string => {
     return numero < 10 ? `0${numero}` : `${numero}`;
 };
 
+// Función para ordenar los registros por fecha más reciente a más antigua
+const sortRegistersByDate = (registros: Registro[]) => {
+    return registros.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  };
+  
+
 export default function Dashboard() {
 
     const [isLoading, setIsLoading] = React.useState(true);
@@ -128,7 +134,8 @@ export default function Dashboard() {
         const fetchData = async () => {
             try {
                 const data = await getRegisters();
-                setRegistros(data);
+                const sortedData = sortRegistersByDate(data);
+                setRegistros(sortedData);
                 setIsLoading(false);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -160,7 +167,7 @@ export default function Dashboard() {
                     return (
                         <p>{fechaFormateada}</p>
                     );
-                  }
+                }
             case 'parkedCars':
                 return (
                     <p>{registro.parkedCars.length}</p>
@@ -174,7 +181,7 @@ export default function Dashboard() {
                     <div className="flex flex-row">
                         <Tooltip content="Ver Carros" >
                             <Button onPress={() => handleNavigate(registro._id)} className="mr-5">
-                            {isCarsNavigate?<Spinner label="Loading..." />:<TruckIcon className='text-blue-500' />}
+                                {isCarsNavigate ? <Spinner label="Loading..." /> : <TruckIcon className='text-blue-500' />}
                             </Button>
                         </Tooltip>
                         <Button onPress={() => handleCalculateTotal(registro)} className="mr-5">
@@ -228,12 +235,12 @@ export default function Dashboard() {
             <div className="flex min-h-screen flex-col items-center">
                 <h1 className='my-10 font-medium text-3xl'>Registro de Parqueadero</h1>
                 <div className="flexjustify-center mb-5">
-                    <Button color="primary" onPress={handleCreateRegister}>{isCarsNavigate?<Spinner color="default"/>:"Agregar Registro"}</Button>
+                    <Button color="primary" onPress={handleCreateRegister}>{isCarsNavigate ? <Spinner color="default" /> : "Agregar Registro"}</Button>
                 </div>
                 <Table aria-label="Lista de registros"
                     classNames={{
                         base: "max-w-4/5 md:w-auto overflow-scroll",
-                        table:"max-w-4/5 md:w-auto overflow-scroll "
+                        table: "max-w-4/5 md:w-auto overflow-scroll "
                     }}>
                     <TableHeader columns={columns}>
                         {(column) => (
@@ -242,8 +249,8 @@ export default function Dashboard() {
                             </TableColumn>
                         )}
                     </TableHeader>
-                    <TableBody 
-        isLoading={isLoading} items={registros} loadingContent={<Spinner className="mt-10" label="Loading..." />}>
+                    <TableBody
+                        isLoading={isLoading} items={registros} loadingContent={<Spinner className="mt-10" label="Loading..." />}>
                         {(item) => (
                             <TableRow key={item._id}>
                                 {(columnKey) => <TableCell className="text-center" >{renderCell(item, columnKey)}</TableCell>}
