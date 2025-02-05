@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🚗 Frontend Parqueadero - Next.js
 
-## Getting Started
+Este es el frontend del sistema de gestión de parqueadero, desarrollado con **Next.js 14**, **React 18** y una UI moderna utilizando **NextUI** y **TailwindCSS**.
 
-First, run the development server:
+---
+
+## ✨ Tecnologías usadas
+
+* ⚛️ **React 18** + **Next.js 14**
+* 🎨 **NextUI** (componentes UI modernos)
+* 🎯 **Zod** + **React Hook Form** para validación
+* 📦 **Axios** para consumo del API
+* 🔐 Manejo de **JWT** para autenticación
+* 🌙 **Next Themes** (soporte dark mode)
+* 🔧 **ESLint** y **TypeScript** configurado
+
+---
+
+## 🚀 Scripts disponibles
 
 ```bash
+# Inicia el servidor en desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Compila el proyecto para producción
+npm run build
+
+# Inicia el servidor de producción
+npm start
+
+# Corre el linter (ESLint)
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔐 Variables de entorno necesarias
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Crea un archivo `.env.local` con lo siguiente:
 
-## Learn More
+```
+NEXT_PUBLIC_API_URL=https://api.parqueadero.com
+NEXT_PUBLIC_JWT_SECRET=tu_clave_jwt_secreta
+```
 
-To learn more about Next.js, take a look at the following resources:
+> 💡 Importante: Nunca subas tu `.env.local` al repositorio.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## 🌐 Despliegue
 
-## Deploy on Vercel
+Este proyecto está listo para ser desplegado en **Vercel** con solo conectar el repositorio y configurar las variables de entorno.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## 🎯 Funcionalidades principales
+
+* Gestión de ingreso/salida de vehículos
+* Cálculo automático del precio de parqueo
+* Interfaz responsiva y accesible
+* Alertas con `react-toastify`
+* Modo oscuro
+
+---
+
+## 📦 Dependencias destacadas
+
+| Paquete           | Descripción                      |
+| ----------------- | -------------------------------- |
+| `@nextui-org/*`   | Sistema de diseño de componentes |
+| `axios`           | Cliente HTTP                     |
+| `react-hook-form` | Formularios reactivos            |
+| `zod`             | Validación robusta               |
+| `jsonwebtoken`    | Validación JWT                   |
+| `next-themes`     | Modo oscuro                      |
+| `react-toastify`  | Notificaciones                   |
+
+---
+
+## ⚖️ Licencia
+
+Este proyecto está licenciado bajo los términos de la licencia [MIT con Commons Clause](./LICENSE).
+
+> ⚠️ **No se permite el uso comercial sin autorización explícita del autor.**
