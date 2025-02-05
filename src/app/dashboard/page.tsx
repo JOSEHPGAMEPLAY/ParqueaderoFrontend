@@ -8,6 +8,7 @@ import { Button } from "@nextui-org/button";
 import axios from 'axios';
 import { TrashIcon, TruckIcon, CurrencyDollarIcon } from '@heroicons/react/24/solid';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
 
 async function createRegisters() {
     try {
@@ -18,7 +19,6 @@ async function createRegisters() {
             },
         }
         );
-        console.log(res);
         return res.data;
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -116,11 +116,12 @@ const agregarCeros = (numero: number): string => {
 // Función para ordenar los registros por fecha más reciente a más antigua
 const sortRegistersByDate = (registros: Registro[]) => {
     return registros.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  };
-  
+};
+
 
 export default function Dashboard() {
 
+    const { role } = useAuth();
     const [isLoading, setIsLoading] = React.useState(true);
     const [isCarsNavigate, setIsCarsNavigate] = React.useState(false);
     const [registros, setRegistros] = React.useState<Registro[]>([]);
@@ -156,9 +157,9 @@ export default function Dashboard() {
         router.push(`/dashboard/carros/${id}`);
     };
 
-    const renderCell = React.useCallback((registro: Registro, columnKey: React.Key) => {
+    const renderCell = React.useCallback((registro: Registro, columnKey: React.Key,role:any) => {
         const cellValue = registro[columnKey as keyof Registro];
-
+        
         switch (columnKey) {
             case 'date':
                 if (typeof cellValue === 'string' || typeof cellValue === 'number') {
@@ -187,9 +188,12 @@ export default function Dashboard() {
                         <Button onPress={() => handleCalculateTotal(registro)} className="mr-5">
                             <CurrencyDollarIcon aria-label="Calcular precio" className='text-green-600' />
                         </Button>
-                        <Button onPress={() => openModal(registro)}>
-                            <TrashIcon aria-label="Eliminar registro" className='text-yellow-600' />
-                        </Button>
+                        {
+                            role == "admin" || role == "owner" ?
+                                <Button onPress={() => openModal(registro)}>
+                                    <TrashIcon aria-label="Eliminar registro" className='text-yellow-600' />
+                                </Button> : <></>
+                        }
                     </div>
                 );
             default:
@@ -212,7 +216,6 @@ export default function Dashboard() {
     };
 
     const handleCalculateTotal = async (registroCalculate: Registro) => {
-        console.log("calculate", registroCalculate);
         try {
             await calculateTotal(registroCalculate._id);
             setRegistros(await getRegisters());
@@ -253,7 +256,7 @@ export default function Dashboard() {
                         isLoading={isLoading} items={registros} loadingContent={<Spinner className="mt-10" label="Loading..." />}>
                         {(item) => (
                             <TableRow key={item._id}>
-                                {(columnKey) => <TableCell className="text-center" >{renderCell(item, columnKey)}</TableCell>}
+                                {(columnKey) => <TableCell className="text-center" >{renderCell(item, columnKey,role)}</TableCell>}
                             </TableRow>
                         )}
                     </TableBody>

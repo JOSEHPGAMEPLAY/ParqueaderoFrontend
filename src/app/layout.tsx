@@ -19,7 +19,7 @@ export default function RootLayout({
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <title>Parqueadero</title>
-                <meta name="description" content={"Aplicación de parqueaderopara gestionar el ingreso y salida de autos, ademas de los valores a cobrar, hecho con Next."} />
+                <meta name="description" content={"Aplicación de parqueadero para gestionar el ingreso y salida de autos, ademas de los valores a cobrar, hecho con Next."} />
             </Head>
             <body className={`${openSans.className} antialiasedmin-h-screen`}>
                 <Providers>
