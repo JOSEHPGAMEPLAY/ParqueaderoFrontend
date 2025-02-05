@@ -1,6 +1,6 @@
 'use client';
 
-import { CurrencyDollarIcon, MagnifyingGlassIcon, PlusIcon, TrashIcon, TruckIcon } from '@heroicons/react/24/solid';
+import { CurrencyDollarIcon, MagnifyingGlassIcon, PlusIcon, TrashIcon, TicketIcon } from '@heroicons/react/24/solid';
 import { Input } from '@nextui-org/input';
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
@@ -8,6 +8,7 @@ import React, { useEffect } from 'react';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip, Spinner, Button, Dropdown, DropdownTrigger, SortDescriptor } from "@nextui-org/react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
 import { ToastContainer, toast } from 'react-toastify';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Carro {
     _id: string;
@@ -39,7 +40,7 @@ async function calculateTotal(_id: any) {
 };
 
 
-async function getCarros(_id:any) {
+async function getCarros(_id: any) {
     try {
         console.log("getCarros", _id);
         const token = localStorage.getItem('token');
@@ -84,10 +85,10 @@ async function deleteCar(_id: any) {
     }
 };
 
-async function exitCar(plateNumber: any) {
+async function exitCar(plateNumber: any, isFree:boolean) {
     try {
         const token = localStorage.getItem('token');
-        const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/parking/calculatePrice`, { plateNumber: plateNumber }, {
+        const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/parking/calculatePrice`, { plateNumber: plateNumber, isFree: isFree }, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -126,7 +127,7 @@ async function addCar(plateNumber: any) {
     }
 };
 
-const agregarCeros = (numero:any) => {
+const agregarCeros = (numero: any) => {
     return numero < 10 ? `0${numero}` : `${numero}`;
 };
 
@@ -139,6 +140,7 @@ const columns = [
 ];
 
 export default function Carros() {
+    const { role } = useAuth();
     const [isLoading, setIsLoading] = React.useState(true);
     const { isOpen: isOpenModalDelete, onOpen: onOpenModalDelete, onClose: onCloseModalDelete } = useDisclosure();
     const { isOpen: isOpenModalCreate, onOpen: onOpenModalCreate, onClose: onCloseModalCreate } = useDisclosure();
@@ -168,7 +170,7 @@ export default function Carros() {
         }
     }, [id]);
 
-    const renderCell = React.useCallback((carro: Carro, columnKey: React.Key) => {
+    const renderCell = React.useCallback((carro: Carro, columnKey: React.Key, role:any) => {
         const cellValue = carro[columnKey as keyof Carro];
 
         switch (columnKey) {
@@ -195,12 +197,18 @@ export default function Carros() {
             case 'actions':
                 return (
                     <div className="flex flex-row">
-                        <Button onPress={() => openExitCar(carro)} className="mr-5">
-                            <CurrencyDollarIcon aria-label="Calcular precio" className='text-green-600' />
+                        <Button onPress={() => openExitCar(carro,false)} className="mr-5">
+                            <CurrencyDollarIcon aria-label="Salida sin ticket calcular precio" className='text-green-600' />
                         </Button>
-                        <Button onPress={() => openModalDelete(carro)}>
-                            <TrashIcon aria-label="Eliminar carro" className='text-yellow-600' />
+                        <Button onPress={() => openExitCar(carro,true)} className="mr-5">
+                            <TicketIcon aria-label="Salida con ticket, salida gratis" className='text-blue-500'  />
                         </Button>
+                        {
+                            role == "admin" || role == "owner" ?
+                                <Button onPress={() => openModalDelete(carro)}>
+                                    <TrashIcon aria-label="Eliminar carro" className='text-yellow-600' />
+                                </Button> : <></>
+                        }
                     </div>
                 );
             default:
@@ -217,9 +225,9 @@ export default function Carros() {
         onOpenModalCreate();
     };
 
-    const openExitCar = async (carro: Carro) => {
+    const openExitCar = async (carro: Carro,isFree:boolean) => {
         setSelectedCarro(carro);
-        const salida = await exitCar(carro.plateNumber);
+        const salida = await exitCar(carro.plateNumber,isFree);
         setCarros(await getCarros(id));
         setPrice(salida.price);
         onOpenModalExitCar();
@@ -315,9 +323,9 @@ export default function Carros() {
             <h1 className="my-3">Carros para el registro {id}</h1>
             <div className="flex mb-5 ">
 
-            <Button color="success" onPress={handleCalculateTotal}>
-                Finalizar
-            </Button>
+                <Button color="success" onPress={handleCalculateTotal}>
+                    Finalizar
+                </Button>
             </div>
 
             <Table aria-label="Lista de carros" className='w-4/5 md:w-auto snap-x'
@@ -339,7 +347,7 @@ export default function Carros() {
                 >
                     {(item) => (
                         <TableRow key={item._id}>
-                            {(columnKey) => <TableCell className="text-center" >{renderCell(item, columnKey)}</TableCell>}
+                            {(columnKey) => <TableCell className="text-center" >{renderCell(item, columnKey, role)}</TableCell>}
                         </TableRow>
                     )}
                 </TableBody>
