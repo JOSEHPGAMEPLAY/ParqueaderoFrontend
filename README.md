@@ -40,7 +40,6 @@ Crea un archivo `.env.local` con lo siguiente:
 
 ```
 NEXT_PUBLIC_API_URL=https://api.parqueadero.com
-NEXT_PUBLIC_JWT_SECRET=tu_clave_jwt_secreta
 ```
 
 > 💡 Importante: Nunca subas tu `.env.local` al repositorio.
