@@ -1,18 +1,27 @@
 import { useState, useEffect } from 'react';
-import { decodeToken, DecodedToken } from '../utils/decodeToken';
+import { getMe } from '../services/auth';
 
 export const useAuth = () => {
   const [role, setRole] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded = decodeToken(token);
-      setRole(decoded?.role || null);
-    }
-    setLoading(false);
+    const fetchUser = async () => {
+      try {
+        const res = await getMe();
+        setRole(res.role || null);
+        setUserId(res.userId || null);
+      } catch (err) {
+        setRole(null);
+        setUserId(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
   }, []);
 
-  return { role, loading };
+  return { role, userId, loading, isAuthenticated: !!role };
 };

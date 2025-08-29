@@ -5,41 +5,17 @@ import {
     UserCircleIcon,
     EyeIcon,
 } from "@heroicons/react/24/solid";
-import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
-import { Spinner } from "@nextui-org/spinner";
-import { Button, Input } from "@nextui-org/react";
+import { RegisterInputs } from "@/types/auth";
+import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/react";
+import { Spinner } from "@heroui/spinner";
+import { Button, Input } from "@heroui/react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { registerSchema } from "@/validations/registerSchema";
 import { zodResolver } from '@hookform/resolvers/zod';
 import ModalContentState from "@/validations/interfacemodal";
-import axios from "axios";
-
-type Inputs = {
-    username: string,
-    password: string,
-    confirmPassword: string,
-}
-async function registerFetch(credentials: Inputs) {
-    const { username, password } = credentials;
-
-    try {
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
-            username,
-            password,
-        });
-
-        return res.data;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        if (axios.isAxiosError(error) && error.response) {
-            throw new Error(error.response.data.message || 'Error en la solicitud');
-        } else {
-            throw new Error('Error de red o del servidor');
-        }
-    }
-}
+import { registerFetch } from "@/services/auth";
 
 export default function Register() {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -48,20 +24,20 @@ export default function Register() {
     const [isVisiblePassword, setIsVisiblePassword] = React.useState(false);
     const [isVisibleConfirmPassword, setIsVisibleConfirmassword] = React.useState(false);
     const [modalContent, setModalContent] = React.useState<ModalContentState>({
-        title: "Iniciar Sesión",
+        title: "",
         body: "",
     })
 
-    const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({ resolver: zodResolver(registerSchema) });
+    const { register, handleSubmit, formState: { errors } } = useForm<RegisterInputs>({ resolver: zodResolver(registerSchema) });
 
     const toggleVisibilityPassword = () => setIsVisiblePassword(!isVisiblePassword);
     const toggleVisibilityConfirmPassword = () => setIsVisibleConfirmassword(!isVisibleConfirmPassword);
 
-    const onSubmit = async (formData: Inputs) => {
+    const onSubmit = async (formData: RegisterInputs) => {
         try {
             setIsLoading(true);
             const response = await registerFetch(formData);
-            localStorage.setItem('token', response.token);
+
             console.log('Register successful', response);
             setModalContent({
                 title: "Registro Exitoso",

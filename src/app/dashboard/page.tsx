@@ -1,111 +1,20 @@
 'use client';
 
-import React from 'react';
-import PrivateRoute from '../components/PrivateRoute';
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip, Spinner } from "@nextui-org/react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
-import { Button } from "@nextui-org/button";
-import axios from 'axios';
+import React, { useCallback } from 'react';
+import { getRegisters, deleteRegisters, calculateTotal, createRegisters } from "@/services/parkingRegisters";
+import { useAuth } from '@/hooks/useAuth';
+import { Registro } from "@/types/registro";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip, Spinner } from "@heroui/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/react";
+import { Button } from "@heroui/button";
 import { TrashIcon, TruckIcon, CurrencyDollarIcon } from '@heroicons/react/24/solid';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-
-async function createRegisters() {
-    try {
-        const token = localStorage.getItem('token');
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/dailyParkingRecord`, {}, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-        );
-        return res.data;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        if (axios.isAxiosError(error) && error.response) {
-            throw new Error(error.response.data.message || 'Error en la solicitud');
-        } else {
-            throw new Error('Error de red o del servidor');
-        }
-    }
-};
-
-async function deleteRegisters(_id: any) {
-    try {
-        const token = localStorage.getItem('token');
-        const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/dailyParkingRecord/${_id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-        );
-
-        return res.data;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        if (axios.isAxiosError(error) && error.response) {
-            throw new Error(error.response.data.message || 'Error en la solicitud');
-        } else {
-            throw new Error('Error de red o del servidor');
-        }
-    }
-};
-
-async function calculateTotal(_id: any) {
-    try {
-        const token = localStorage.getItem('token');
-        const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/dailyParkingRecord/calculateTotalEarned/${_id}`, {}, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        },
-        );
-        return res.data;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        if (axios.isAxiosError(error) && error.response) {
-            throw new Error(error.response.data.message || 'Error en la solicitud');
-        } else {
-            throw new Error('Error de red o del servidor');
-        }
-    }
-};
-
-async function getRegisters() {
-    try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/dailyParkingRecord`, {
-
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-        );
-
-        return res.data;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        if (axios.isAxiosError(error) && error.response) {
-            throw new Error(error.response.data.message || 'Error en la solicitud');
-        } else {
-            throw new Error('Error de red o del servidor');
-        }
-    }
-};
-
-interface Registro {
-    _id: string;
-    date: string;
-    parkedCars: string[];
-    totalEarned: number;
-    __v: number;
-};
 
 const columns = [
     { name: "Fecha", uid: "date" },
-    { name: "CARROS PARQUEADOS", uid: "parkedCars" },
-    { name: "TOTAL", uid: "totalEarned" },
-    { name: "ACCIONES", uid: "actions" },
+    { name: "N° Carros", uid: "parkedCars" },
+    { name: "Total", uid: "totalEarned" },
+    { name: "Acciones", uid: "actions" },
 ];
 
 // Función auxiliar para agregar ceros a un número si es necesario
@@ -147,15 +56,15 @@ export default function Dashboard() {
         fetchData();
     }, []);
 
-    const openModal = async (registro: Registro) => {
+    const openModal = useCallback(async (registro: Registro) => {
         setSelectedRegistro(registro);
         onOpen();
-    };
+    }, [onOpen]);
 
-    const handleNavigate = (id: any) => {
+    const handleNavigate = useCallback((id: any) => {
         setIsCarsNavigate(true);
         router.push(`/dashboard/carros/${id}`);
-    };
+    }, [router]);
 
     const renderCell = React.useCallback((registro: Registro, columnKey: React.Key,role:any) => {
         const cellValue = registro[columnKey as keyof Registro];
@@ -199,7 +108,7 @@ export default function Dashboard() {
             default:
                 return cellValue;
         }
-    }, []);
+    }, [handleNavigate, isCarsNavigate, openModal]);
 
     const handleDelete = async () => {
         if (selectedRegistro) {
@@ -234,9 +143,8 @@ export default function Dashboard() {
     };
 
     return (
-        <PrivateRoute>
-            <div className="flex min-h-screen flex-col items-center">
-                <h1 className='my-10 font-medium text-3xl'>Registro de Parqueadero</h1>
+            <div className="flex min-h-screen flex-col items-center m-2">
+                <h1 className='my-5 font-medium text-3xl'>Registro de Parqueadero</h1>
                 <div className="flexjustify-center mb-5">
                     <Button color="primary" onPress={handleCreateRegister}>{isCarsNavigate ? <Spinner color="default" /> : "Agregar Registro"}</Button>
                 </div>
@@ -282,6 +190,5 @@ export default function Dashboard() {
                     </ModalContent>
                 </Modal>
             </div>
-        </PrivateRoute>
     );
 };

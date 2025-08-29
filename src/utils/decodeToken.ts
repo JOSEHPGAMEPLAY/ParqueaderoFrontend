@@ -1,14 +1,14 @@
-import jwt from 'jsonwebtoken';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 
-export interface DecodedToken {
+export interface DecodedToken extends JwtPayload {
   role?: string;
-  exp?: number;
-  [key: string]: any; 
+  userId?: string;
+  [key: string]: any;
 }
 
 export const decodeToken = (token: string): DecodedToken | null => {
   try {
-    return jwt.decode(token) as DecodedToken;
+    return jwtDecode<DecodedToken>(token);
   } catch (error) {
     console.error("Error decoding token:", error);
     return null;

@@ -1,131 +1,14 @@
 'use client';
 
-import { CurrencyDollarIcon, MagnifyingGlassIcon, PlusIcon, TrashIcon, TicketIcon } from '@heroicons/react/24/solid';
-import { Input } from '@nextui-org/input';
-import axios from 'axios';
+import { CurrencyDollarIcon, MagnifyingGlassIcon, PlusIcon, TrashIcon, TicketIcon, EllipsisVerticalIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/solid';
+import { addCar, calculateTotal, deleteCar, exitCar, getCarros } from "@/services/parkingCars";
 import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip, Spinner, Button, Dropdown, DropdownTrigger, SortDescriptor } from "@nextui-org/react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
+import React, { useEffect, useCallback, useState } from 'react';
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip, Spinner, Button, Dropdown, DropdownTrigger, SortDescriptor, DropdownMenu, DropdownItem, Input } from "@heroui/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/react";
 import { ToastContainer, toast } from 'react-toastify';
 import { useAuth } from '@/hooks/useAuth';
-
-interface Carro {
-    _id: string;
-    plateNumber: string;
-    entryTime: string;
-    exitTime: string;
-    price: string;
-}
-
-async function calculateTotal(_id: any) {
-    try {
-        const token = localStorage.getItem('token');
-        const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/dailyParkingRecord/calculateTotalEarned/${_id}`, {}, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        },
-        );
-        return res.data;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        if (axios.isAxiosError(error) && error.response) {
-            toast.error(error.response.data.message || 'Error en la solicitud');
-        } else {
-            toast.error('Error de red o del servidor');
-        }
-        throw error;
-    }
-};
-
-
-async function getCarros(_id: any) {
-    try {
-        console.log("getCarros", _id);
-        const token = localStorage.getItem('token');
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/dailyParkingRecord/${_id}`, {
-
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-        );
-
-        return res.data;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        if (axios.isAxiosError(error) && error.response) {
-            toast.error(error.response.data.message || 'Error en la solicitud');
-        } else {
-            toast.error('Error de red o del servidor');
-        }
-        throw error;
-    }
-};
-
-async function deleteCar(_id: any) {
-    try {
-        const token = localStorage.getItem('token');
-        const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/parking/${_id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-        );
-        return res.data;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        if (axios.isAxiosError(error) && error.response) {
-            toast.error(error.response.data.message || 'Error en la solicitud');
-        } else {
-            toast.error('Error de red o del servidor');
-        }
-        throw error;
-    }
-};
-
-async function exitCar(plateNumber: any, isFree:boolean) {
-    try {
-        const token = localStorage.getItem('token');
-        const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/parking/calculatePrice`, { plateNumber: plateNumber, isFree: isFree }, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        },
-        );
-        return res.data;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        if (axios.isAxiosError(error) && error.response) {
-            toast.error(error.response.data.message || 'Error en la solicitud');
-        } else {
-            toast.error('Error de red o del servidor');
-        }
-        throw error;
-    }
-};
-
-async function addCar(plateNumber: any) {
-    try {
-        const token = localStorage.getItem('token');
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/parking`, { plateNumber: plateNumber }, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        },
-        );
-        return res.data;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        if (axios.isAxiosError(error) && error.response) {
-            toast.error(error.response.data.message || 'Error en la solicitud');
-        } else {
-            toast.error('Error de red o del servidor');
-        }
-        throw error;
-    }
-};
+import { Carro } from '@/types/car';
 
 const agregarCeros = (numero: any) => {
     return numero < 10 ? `0${numero}` : `${numero}`;
@@ -141,16 +24,16 @@ const columns = [
 
 export default function Carros() {
     const { role } = useAuth();
-    const [isLoading, setIsLoading] = React.useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const { isOpen: isOpenModalDelete, onOpen: onOpenModalDelete, onClose: onCloseModalDelete } = useDisclosure();
     const { isOpen: isOpenModalCreate, onOpen: onOpenModalCreate, onClose: onCloseModalCreate } = useDisclosure();
     const { isOpen: isOpenModalExitCar, onOpen: onOpenModalExitCar, onClose: onCloseModalExitCar } = useDisclosure();
-    const [plateCar, setPlateCar] = React.useState('');
-    const [price, setPrice] = React.useState('');
-    const [carros, setCarros] = React.useState<Carro[]>([]);
-    const [selectedCarro, setSelectedCarro] = React.useState<Carro | null>(null);
-    const [filterValue, setFilterValue] = React.useState("");
-    const [error, setError] = React.useState<string | null>(null);
+    const [plateCar, setPlateCar] = useState('');
+    const [price, setPrice] = useState('');
+    const [carros, setCarros] = useState<Carro[]>([]);
+    const [selectedCarro, setSelectedCarro] = useState<Carro | null>(null);
+    const [filterValue, setFilterValue] = useState("");
+    const [error, setError] = useState<string | null>(null);
     const { id } = useParams();
     const router = useRouter();
 
@@ -170,7 +53,20 @@ export default function Carros() {
         }
     }, [id]);
 
-    const renderCell = React.useCallback((carro: Carro, columnKey: React.Key, role:any) => {
+    const openExitCar = useCallback(async (carro: Carro,isFree:boolean) => {
+        setSelectedCarro(carro);
+        const salida = await exitCar(carro.plateNumber,isFree);
+        setCarros(await getCarros(id));
+        setPrice(salida.price);
+        onOpenModalExitCar();
+    }, [id, onOpenModalExitCar]);
+
+    const openModalDelete = useCallback(async (carro: Carro) => {
+        setSelectedCarro(carro);
+        onOpenModalDelete();
+    }, [onOpenModalDelete]);
+
+    const renderCell = useCallback((carro: Carro, columnKey: React.Key, role:any) => {
         const cellValue = carro[columnKey as keyof Carro];
 
         switch (columnKey) {
@@ -179,6 +75,7 @@ export default function Carros() {
                     <p>{cellValue}</p>
                 );
             case 'entryTime':
+                console.log('cellValue', cellValue);
                 const fecha = new Date(cellValue);
                 const fechaFormateada = `${agregarCeros(fecha.getUTCHours())}:${agregarCeros(fecha.getUTCMinutes())}`;
                 return (
@@ -197,7 +94,90 @@ export default function Carros() {
             case 'actions':
                 return (
                     <div className="flex flex-row">
-                        <Button onPress={() => openExitCar(carro,false)} className="mr-5">
+                        <div className="relative flex justify-end items-center gap-2">
+                            <Dropdown className="bg-background border-1 border-default-200">
+                                <DropdownTrigger>
+                                <Button isIconOnly radius="full" size="sm" variant="light">
+                                    <EllipsisVerticalIcon/>
+                                </Button>
+                                </DropdownTrigger>
+                                <DropdownMenu
+                                    aria-label='Acciones del carro'
+                                    onAction={(key)=>{
+                                        console.log('Acción seleccionada:', key);
+                                        switch (key) {
+                                            case 'exit':
+                                                openExitCar(carro,false);
+                                                break;
+                                            case 'ticket':
+                                                openExitCar(carro,true);
+                                                break;
+                                            case 'comment':
+                                                toast.info('Funcionalidad en desarrollo');
+                                                break;
+                                            case 'delete':
+                                                openModalDelete(carro);
+                                                break;
+                                            default:
+                                                console.log('Acción no reconocida');
+                                        }
+                                    }}
+                                >
+                                    <DropdownItem
+                                        key="exit"
+                                        className="text-success"
+                                        color="success"
+                                        startContent={
+                                            <CurrencyDollarIcon 
+                                            aria-label="Salida sin ticket calcular precio" 
+                                            className="w-4 h-4" />
+                                        }
+                                    >
+                                        Cobrar
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key="ticket"
+                                        className="text-primary"
+                                        color="primary"
+                                        startContent={
+                                            <TicketIcon 
+                                            aria-label="Salida con ticket, salida gratis"  
+                                            className="w-4 h-4" />
+                                        }
+                                    >
+                                        Ticket
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key="comment"
+                                        className="text-primary"
+                                        color="primary"
+                                        startContent={
+                                            <ChatBubbleLeftIcon  
+                                            aria-label="Agregar comentario"  
+                                            className="w-4 h-4" />
+                                        }
+                                    >
+                                        Comentario
+                                    </DropdownItem>
+                                    {
+                                        role == "admin" || role == "owner" ?
+                                            <DropdownItem
+                                                key="delete"
+                                                className="text-danger"
+                                                color="danger"
+                                                startContent={
+                                                    <TrashIcon 
+                                                    aria-label="Eliminar carro" 
+                                                    className="w-4 h-4" />
+                                                }
+                                            >
+                                                Eliminar
+                                            </DropdownItem> : <></>
+                                    }
+                                </DropdownMenu>
+                            </Dropdown>
+                        </div>
+                        {/* <Button onPress={() => openExitCar(carro,false)} className="mr-5">
                             <CurrencyDollarIcon aria-label="Salida sin ticket calcular precio" className='text-green-600' />
                         </Button>
                         <Button onPress={() => openExitCar(carro,true)} className="mr-5">
@@ -208,32 +188,19 @@ export default function Carros() {
                                 <Button onPress={() => openModalDelete(carro)}>
                                     <TrashIcon aria-label="Eliminar carro" className='text-yellow-600' />
                                 </Button> : <></>
-                        }
+                        } */}
                     </div>
                 );
             default:
                 return cellValue;
         }
-    }, []);
+    }, [openExitCar,openModalDelete]);
 
-    const openModalDelete = async (carro: Carro) => {
-        setSelectedCarro(carro);
-        onOpenModalDelete();
-    };
-
-    const openModalCreate = () => {
+    const openModalCreate = useCallback(() => {
         onOpenModalCreate();
-    };
+    }, [onOpenModalCreate]);
 
-    const openExitCar = async (carro: Carro,isFree:boolean) => {
-        setSelectedCarro(carro);
-        const salida = await exitCar(carro.plateNumber,isFree);
-        setCarros(await getCarros(id));
-        setPrice(salida.price);
-        onOpenModalExitCar();
-    };
-
-    const onSearchChange = React.useCallback((value?: string) => {
+    const onSearchChange = useCallback((value?: string) => {
         if (value) {
             setFilterValue(value);
         } else {
@@ -241,7 +208,7 @@ export default function Carros() {
         }
     }, []);
 
-    const onClear = React.useCallback(() => {
+    const onClear = useCallback(() => {
         setFilterValue("")
     }, [])
 
@@ -315,28 +282,29 @@ export default function Carros() {
         );
     }, [
         filterValue,
-        onSearchChange
+        onSearchChange,
+        onClear,
+        openModalCreate,
     ]);
 
     return (
-        <div className='flex flex-col min-h-screen items-center'>
-            <h1 className="my-3">Carros para el registro {id}</h1>
-            <div className="flex mb-5 ">
-
+        <div className='flex flex-col min-h-screen items-center m-2'>
+            <h1 className="my-2">Carros para el registro {id}</h1>
+            <div className="flex my-2 mb-4">
                 <Button color="success" onPress={handleCalculateTotal}>
                     Finalizar
                 </Button>
             </div>
-
-            <Table aria-label="Lista de carros" className='w-4/5 md:w-auto snap-x'
+            <Table aria-label="Lista de carros" className='md:w-auto snap-x'
                 classNames={{
                     base: "max-w-[97vw] md:w-auto max-h-[80vh]",
                 }}
                 topContent={topContent}
+                topContentPlacement="outside"
             >
                 <TableHeader columns={columns}>
                     {(column) => (
-                        <TableColumn key={column.uid} align={column.uid === "actions" ? "center" : "start"}>
+                        <TableColumn key={column.uid} align={"center"}>
                             {column.name}
                         </TableColumn>
                     )}
