@@ -7,6 +7,11 @@ export const formatDate = (dateValue: string | number): string => {
     return `${fecha.getUTCFullYear()}-${agregarCeros(fecha.getUTCMonth() + 1)}-${agregarCeros(fecha.getUTCDate())}`;
 };
 
+export const formatTime = (timeValue: string | number): string => {
+    const fecha = new Date(timeValue);
+    return `${agregarCeros(fecha.getUTCHours())}:${agregarCeros(fecha.getUTCMinutes())}`;
+};
+
 // Ordenar registros por fecha (más reciente primero)
 import { Registro } from "@/types/registro";
 
