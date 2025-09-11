@@ -7,7 +7,8 @@ export async function loginFetch(credentials: LoginInputs) {
     try {
         const res = await api.post(
             "/auth/login",
-            { username, password }
+            { username, password },
+            { withCredentials: true }
         );
         return res.data;
     } catch (error: any) {

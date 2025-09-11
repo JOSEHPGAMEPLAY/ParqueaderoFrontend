@@ -1,4 +1,3 @@
-'use client';
 import { z } from "zod";
 
 export const userSchema = z.object({

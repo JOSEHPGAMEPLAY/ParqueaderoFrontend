@@ -5,7 +5,6 @@ import {
     UserCircleIcon,
     EyeIcon,
 } from "@heroicons/react/24/solid";
-import { loginFetch } from "@/services/auth";
 import { LoginInputs } from "@/types/auth";
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/react";
@@ -15,10 +14,12 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { userSchema } from "@/validations/userSchema";
 import { zodResolver } from '@hookform/resolvers/zod';
-import ModalContentState from "@/validations/interfacemodal";
+import type { ModalContentState } from "@/types/modal";
 import { useRouter  } from 'next/navigation';
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Login() {
+    const { login } = useAuth();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [isLoading, setIsLoading] = React.useState(false);
     const [isRegisterLoading, setIsRegisterLoading] = React.useState(false);
@@ -36,11 +37,11 @@ export default function Login() {
     const onSubmit = async (formData: LoginInputs) => {
         try {
             setIsLoading(true);
-            await loginFetch(formData);
+            const loggedUser = await login(formData);
             
             setModalContent({
                 title: "Inicio de Sesión Exitoso",
-                body: "Bienvenido, has iniciado sesión correctamente.",
+                body: `Bienvenido, ${loggedUser.username}`,
             });
             
             onOpen();

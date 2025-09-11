@@ -6,7 +6,7 @@ export interface DecodedToken extends JwtPayload {
   [key: string]: any;
 }
 
-export const decodeToken = (token: string): DecodedToken | null => {
+export const decodeJwt = (token: string): DecodedToken | null => {
   try {
     return jwtDecode<DecodedToken>(token);
   } catch (error) {

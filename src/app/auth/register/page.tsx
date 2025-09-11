@@ -14,7 +14,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { registerSchema } from "@/validations/registerSchema";
 import { zodResolver } from '@hookform/resolvers/zod';
-import ModalContentState from "@/validations/interfacemodal";
+import type { ModalContentState } from "@/types/modal";
 import { registerFetch } from "@/services/auth";
 
 export default function Register() {
