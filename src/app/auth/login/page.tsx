@@ -5,70 +5,46 @@ import {
     UserCircleIcon,
     EyeIcon,
 } from "@heroicons/react/24/solid";
-import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
-import { Spinner } from "@nextui-org/spinner";
-import { Button, Input } from "@nextui-org/react";
+import { LoginInputs } from "@/types/auth";
+import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/react";
+import { Spinner } from "@heroui/spinner";
+import { Button, Input } from "@heroui/react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { userSchema } from "@/validations/userSchema";
 import { zodResolver } from '@hookform/resolvers/zod';
-import axios from 'axios';
-import ModalContentState from "@/validations/interfacemodal";
+import type { ModalContentState } from "@/types/modal";
 import { useRouter  } from 'next/navigation';
-
-type Inputs = {
-    username: string,
-    password: string,
-}
-
-async function loginFetch(credentials: Inputs) {
-    const { username, password } = credentials;
-
-    try {
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-            username,
-            password,
-        });
-
-        return res.data;
-    } catch (error) {
-         console.error('Error fetching data:', error);
-        if (axios.isAxiosError(error) && error.response) {
-            throw new Error(error.response.data.message || 'Error en la solicitud');
-        } else {
-            throw new Error('Error de red o del servidor');
-        }
-    }
-}
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Login() {
+    const { login } = useAuth();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [isLoading, setIsLoading] = React.useState(false);
     const [isRegisterLoading, setIsRegisterLoading] = React.useState(false);
     const [isVisible, setIsVisible] = React.useState(false);
     const [modalContent, setModalContent] = React.useState<ModalContentState>({
-        title: "Iniciar Sesión",
+        title: "",
         body: "",
     })
-    const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({ resolver: zodResolver(userSchema) });
+    const { register, handleSubmit, formState: { errors } } = useForm<LoginInputs>({ resolver: zodResolver(userSchema) });
     const toggleVisibility = () => setIsVisible(!isVisible);
     const router = useRouter();
 
-    const handleRegisterClick = () => {
-        setIsRegisterLoading(true);
-    }
+    const handleRegisterClick = () => setIsRegisterLoading(true);
 
-    const onSubmit = async (formData: Inputs) => {
+    const onSubmit = async (formData: LoginInputs) => {
         try {
             setIsLoading(true);
-            const response = await loginFetch(formData);
-            localStorage.setItem('token', response.token);
-            console.log('Login successful', response);
+            const loggedUser = await login(formData);
+            
             setModalContent({
                 title: "Inicio de Sesión Exitoso",
-                body: "Bienvenido, has iniciado sesión correctamente.",
+                body: `Bienvenido, ${loggedUser.username}`,
             });
+            
+            onOpen();
             router.push('/dashboard');
         } catch (error) {
             console.error('Login failed:', error);
@@ -76,10 +52,10 @@ export default function Login() {
                 title: "Error en el Inicio de Sesión",
                 body: error instanceof Error ? error.message : 'Ocurrió un error inesperado',
             });
+            onOpen();
         } finally {
             setIsLoading(false);
         }
-        onOpen();
     };
 
     return (
@@ -130,7 +106,7 @@ export default function Login() {
                         />
                     </CardBody>
                     <CardFooter className="justify-center">
-                        <Button radius="sm" type="submit" className="mx-1">
+                        <Button radius="sm" type="submit" className="mx-1" disabled={isLoading}>
                             {isLoading ? <Spinner /> : 'Ingresar'}
                         </Button>
                         <Button
