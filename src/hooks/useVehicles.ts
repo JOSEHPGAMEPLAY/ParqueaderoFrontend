@@ -4,6 +4,7 @@ import { Vehiculo } from "@/types/vehicle";
 import { useDisclosure } from "@heroui/modal";
 import { addVehicle, deleteVehicle, exitVehicle, getVehicles } from "@/services/parkingVehicles";
 import { calculateTotal } from "@/services/parkingRegisters";
+import { addComment } from "@/services/parkingVehiclesComments";
 
 export const useVehicles = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -114,6 +115,24 @@ export const useVehicles = () => {
         setPlateVehicle(event.target.value.toUpperCase());
     };
 
+    const onAddComment = useCallback(async (vehiculo: Vehiculo) => {
+        try {
+            setSelectedVehiculo(vehiculo);  
+
+            await router.push(
+                `/dashboard/vehiculos/${id}/comentarios/${vehiculo._id}`
+            );
+        } catch (error) {
+            console.error('Error al navegar a los comentarios:', error);
+
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : 'Error al navegar a los comentarios'
+            );
+        }
+    }, [id, router]);
+    
     const handleCalculateTotal = async () => {
         try {
             await calculateTotal(id);
@@ -150,6 +169,7 @@ export const useVehicles = () => {
             openModalCreate,
             onSearchChange,
             onClear,
+            onAddComment,
             handleDelete,
             handleCreate,
             handleInputChange,
