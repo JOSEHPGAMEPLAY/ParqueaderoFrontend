@@ -4,7 +4,8 @@ import { toast } from "react-toastify";
 
 export const useVehicleActions = ({
     onExitVehicle,
-    onDeleteVehicle
+    onDeleteVehicle,
+    onAddComment
 }: UseVehicleActionsProps) => {
 
     const handleVehicleAction = useCallback((action: VehicleActionType, vehiculo: Vehiculo) => {
@@ -16,7 +17,7 @@ export const useVehicleActions = ({
                 onExitVehicle(vehiculo, true);
                 break;
             case 'comment':
-                toast.info('Funcionalidad en desarrollo');
+                onAddComment(vehiculo);
                 break;
             case 'delete':
                 onDeleteVehicle(vehiculo);
@@ -26,7 +27,7 @@ export const useVehicleActions = ({
             
         }
 
-    }, [onDeleteVehicle, onExitVehicle]);
+    }, [onDeleteVehicle, onExitVehicle, onAddComment]);
 
     return { handleVehicleAction };
 };

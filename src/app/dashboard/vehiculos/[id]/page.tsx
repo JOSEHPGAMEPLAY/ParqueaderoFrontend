@@ -19,6 +19,7 @@ export default function Vehiculos() {
         modals,
         plateVehicle,
         filteredVehiculos,
+        selectedVehiculo,
         handlers
     } = useVehicles();
 
@@ -39,6 +40,7 @@ export default function Vehiculos() {
                 onOpenCreateModal={handlers.openModalCreate}
                 onExitVehicle={handlers.openExitVehicle}
                 onDeleteVehicle={handlers.openModalDelete}
+                onAddComment={handlers.onAddComment}
             />
             
             <CreateVehicleModal
@@ -58,7 +60,7 @@ export default function Vehiculos() {
                 confirmText="Eliminar"
                 confirmColor="danger"
             />
-                        
+            
             <ExitVehicleModal
                 isOpen={modals.isOpenModalExitVehicle}
                 onClose={modals.onCloseModalExitVehicle}

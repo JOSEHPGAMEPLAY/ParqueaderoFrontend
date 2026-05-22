@@ -27,6 +27,7 @@ export type VehicleActionType = 'exit' | 'ticket' | 'comment' | 'delete';
 export interface UseVehicleActionsProps {
     onExitVehicle: (vehiculo: Vehiculo, isFree: boolean) => void;
     onDeleteVehicle: (vehiculo: Vehiculo) => void;
+    onAddComment: (vehiculo: Vehiculo) => void;
 }
 
 export interface ExitVehicleModalProps {
@@ -61,6 +62,7 @@ export interface VehiclesTableProps {
     onOpenCreateModal: () => void;
     onExitVehicle: (vehiculo: Vehiculo, isFree: boolean) => void;
     onDeleteVehicle: (vehiculo: Vehiculo) => void;
+    onAddComment: (vehiculo: Vehiculo) => void;
 }
 
 export interface VehiclesHeaderProps {
