@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { UserProfile } from "@/types/user";
 import { useDisclosure } from "@heroui/modal";
-import { getUsers, resetPassword, toggleUserActivation } from "@/services/parkingUsers";
+import { getUsers, resetPassword, toggleUserActivation, deleteUser } from "@/services/parkingUsers";
 import { toast } from "react-toastify";
 
 export const useUsers = () => {
@@ -11,8 +11,17 @@ export const useUsers = () => {
     const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
 
     const { isOpen: isOpenPassword, onOpen: onOpenPassword, onClose: onClosePassword } = useDisclosure();
+    const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
+
+    const filteredUsers = useMemo(() => {
+        if (!searchTerm.trim()) return users;
+        return users.filter(u =>
+            u.username.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [users, searchTerm]);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -35,6 +44,11 @@ export const useUsers = () => {
         onOpenPassword();
     }, [onOpenPassword]);
 
+    const openDeleteModal = useCallback((user: UserProfile) => {
+        setSelectedUser(user);
+        onOpenDelete();
+    }, [onOpenDelete]);
+
     const handleToggleActivation = async (user: UserProfile) => {
         try {
             await toggleUserActivation(user._id, !user.isActive);
@@ -42,6 +56,19 @@ export const useUsers = () => {
                 u._id === user._id ? { ...u, isActive: !u.isActive } : u
             ));
             toast.success(`Usuario ${!user.isActive ? 'activado' : 'desactivado'} correctamente`);
+        } catch {
+            // error handled in service
+        }
+    };
+
+    const handleDeleteUser = async () => {
+        if (!selectedUser) return;
+        try {
+            await deleteUser(selectedUser._id);
+            setUsers(prev => prev.filter(u => u._id !== selectedUser._id));
+            toast.success('Usuario eliminado exitosamente');
+            onCloseDelete();
+            setSelectedUser(null);
         } catch {
             // error handled in service
         }
@@ -73,21 +100,28 @@ export const useUsers = () => {
     };
 
     return {
-        users,
+        users: filteredUsers,
+        allUsers: users,
         isLoading,
         error,
         selectedUser,
+        searchTerm,
         newPassword,
         confirmPassword,
         modals: {
             isOpenPassword,
             onClosePassword,
+            isOpenDelete,
+            onCloseDelete,
         },
         handlers: {
+            setSearchTerm,
             setNewPassword,
             setConfirmPassword,
             openPasswordModal,
+            openDeleteModal,
             handleToggleActivation,
+            handleDeleteUser,
             handleResetPassword,
         }
     };

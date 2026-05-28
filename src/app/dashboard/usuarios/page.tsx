@@ -8,8 +8,9 @@ import { Button } from '@heroui/button';
 import { Input } from '@heroui/input';
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/modal';
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@heroui/react';
-import { EllipsisVerticalIcon, KeyIcon } from '@heroicons/react/24/solid';
+import { EllipsisVerticalIcon, KeyIcon, TrashIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { UserProfile } from '@/types/user';
+import ConfirmModal from '@/components/common/ConfirmModal';
 
 const STATUS_COLUMNS = [
     { uid: 'username', name: 'Usuario' },
@@ -25,6 +26,7 @@ export default function Usuarios() {
         isLoading,
         error,
         selectedUser,
+        searchTerm,
         newPassword,
         confirmPassword,
         modals,
@@ -38,6 +40,12 @@ export default function Usuarios() {
     };
 
     const canResetPassword = (targetUser: UserProfile) => {
+        if (user?.role === 'owner' && targetUser.role !== 'owner') return true;
+        if (user?.role === 'admin' && targetUser.role === 'user') return true;
+        return false;
+    };
+
+    const canDelete = (targetUser: UserProfile) => {
         if (user?.role === 'owner' && targetUser.role !== 'owner') return true;
         if (user?.role === 'admin' && targetUser.role === 'user') return true;
         return false;
@@ -87,6 +95,17 @@ export default function Usuarios() {
                                     {userProfile.isActive ? 'Desactivar' : 'Activar'}
                                 </DropdownItem>
                             ) : null}
+                            {canDelete(userProfile) ? (
+                                <DropdownItem
+                                    key="delete"
+                                    className="text-danger"
+                                    color="danger"
+                                    startContent={<TrashIcon className="size-4" />}
+                                    onPress={() => handlers.openDeleteModal(userProfile)}
+                                >
+                                    Eliminar
+                                </DropdownItem>
+                            ) : null}
                         </DropdownMenu>
                     </Dropdown>
                 );
@@ -100,6 +119,15 @@ export default function Usuarios() {
             <h1 className="text-2xl font-bold">Gestión de Usuarios</h1>
 
             {error && <p className="text-danger text-center text-xl">{error}</p>}
+
+            <Input
+                placeholder="Buscar por nombre de usuario..."
+                variant="bordered"
+                startContent={<MagnifyingGlassIcon className="size-5 text-default-400" />}
+                value={searchTerm}
+                onValueChange={handlers.setSearchTerm}
+                className="max-w-sm"
+            />
 
             <Table
                 aria-label="Lista de usuarios"
@@ -162,6 +190,17 @@ export default function Usuarios() {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+
+            <ConfirmModal
+                isOpen={modals.isOpenDelete}
+                onClose={modals.onCloseDelete}
+                onConfirm={handlers.handleDeleteUser}
+                title="Eliminar usuario"
+                message={`¿Estás seguro de eliminar a "${selectedUser?.username}"? Esta acción no se puede deshacer.`}
+                confirmText="Eliminar"
+                cancelText="Cancelar"
+                confirmColor="danger"
+            />
         </div>
     );
 }

@@ -62,6 +62,21 @@ export async function updateUser(userId: string, data: { username?: string; role
     }
 }
 
+export async function deleteUser(userId: string) {
+    try {
+        const res = await api.delete(`/user/${userId}`);
+        return res.data;
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        if (axios.isAxiosError(error) && error.response) {
+            toast.error(error.response.data.message || 'Error en la solicitud');
+        } else {
+            toast.error('Error de red o del servidor');
+        }
+        throw error;
+    }
+}
+
 export async function toggleUserActivation(userId: string, isActive: boolean) {
     try {
         const res = await api.put(`/user/activate/${userId}`, { isActive });

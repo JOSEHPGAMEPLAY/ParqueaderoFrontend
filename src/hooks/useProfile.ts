@@ -5,7 +5,7 @@ import { useDisclosure } from "@heroui/modal";
 import { toast } from "react-toastify";
 
 export const useProfile = () => {
-    const { user, logout } = useAuth();
+    const { user, refreshUser } = useAuth();
     const [username, setUsername] = useState(user?.username || '');
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -26,6 +26,7 @@ export const useProfile = () => {
         }
         try {
             await updateUser(user.id, { username: username.trim() });
+            await refreshUser();
             toast.success('Perfil actualizado exitosamente');
             onCloseEdit();
         } catch {
