@@ -42,8 +42,8 @@ export const VehicleTableRow: React.FC<VehicleTableRowProps> = ({
                                 Cobrar
                             </DropdownItem>
                             <DropdownItem
-                                key="ticket"
-                                className="text-primary"
+                                    key="ticket"
+                                    className="text-primary"
                                 color="primary"
                                 startContent={
                                     <TicketIcon 
@@ -60,12 +60,12 @@ export const VehicleTableRow: React.FC<VehicleTableRowProps> = ({
                                 color="primary"
                                 startContent={
                                     <ChatBubbleLeftIcon  
-                                        aria-label="Agregar comentario"  
+                                        aria-label="Ver comentarios"  
                                         className="w-4 h-4" 
                                     />
                                 }
                             >
-                                Comentario
+                                Comentarios
                             </DropdownItem>
                             {canDelete ? (
                                 <DropdownItem

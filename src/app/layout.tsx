@@ -1,5 +1,3 @@
-'use client';
-
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -8,6 +6,12 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const openSans = Open_Sans({ subsets: ["latin"] });
 
+export const metadata = {
+    title: "Parqueadero",
+    description:
+        "Aplicación de parqueadero para gestionar el ingreso y salida de autos.",
+};
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -15,13 +19,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="es" suppressHydrationWarning>
-            <Head>
-                <meta charSet="utf-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <title>Parqueadero</title>
-                <meta name="description" content={"Aplicación de parqueadero para gestionar el ingreso y salida de autos, ademas de los valores a cobrar, hecho con Next."} />
-            </Head>
-            <body className={`${openSans.className} antialiasedmin-h-screen`}>
+            <body className={`${openSans.className} antialiased min-h-screen`}>
                 <Providers>
                     {children}
                 </Providers>

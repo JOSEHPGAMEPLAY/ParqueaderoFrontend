@@ -21,11 +21,13 @@ export const VehiclesTable: React.FC<VehiclesTableProps> = ({
     onClear,
     onOpenCreateModal,
     onExitVehicle,
-    onDeleteVehicle
+    onDeleteVehicle,
+    onAddComment,
 }) => {
     const { handleVehicleAction } = useVehicleActions({
         onExitVehicle,
         onDeleteVehicle,
+        onAddComment,
     });
 
     const topContent = useMemo(() => {
