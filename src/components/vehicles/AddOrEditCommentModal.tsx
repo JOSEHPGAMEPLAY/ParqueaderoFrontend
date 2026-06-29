@@ -1,7 +1,5 @@
 import { AddOrEditCommentProps } from "@/types/comment";
-import { Button } from "@heroui/button";
-import { Textarea } from "@heroui/input";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Textarea, Button } from "@heroui/react";
 
 export const AddOrEditCommentModal:  React.FC<AddOrEditCommentProps> = ({
     isOpen,

@@ -68,6 +68,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         router.push('/auth/login');
     }
 
+    const refreshUser = async () => {
+        try {
+            const res = await getMe();
+            const payload = res.user;
+            const mappedUser: User = {
+                id: payload.userId,
+                username: payload.username ?? "",
+                role: payload.role,
+            };
+            setUser(mappedUser);
+            scheduleLogout(payload.exp);
+        } catch {
+            setUser(null);
+            router.push('/auth/login');
+        }
+    };
+
     const scheduleLogout = (exp: number) => {
         const expiresInMs = exp * 1000 - Date.now();
         if (expiresInMs <= 0) {
@@ -82,7 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout}}>
+        <AuthContext.Provider value={{ user, loading, login, logout, refreshUser}}>
             {children}
         </AuthContext.Provider>
     );

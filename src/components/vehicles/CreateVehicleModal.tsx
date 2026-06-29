@@ -1,7 +1,5 @@
 import { CreateVehicleModalProps } from "@/types/vehicle";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Button, Input } from "@heroui/react";
 
 export const CreateVehicleModal:  React.FC<CreateVehicleModalProps> = ({
     isOpen,

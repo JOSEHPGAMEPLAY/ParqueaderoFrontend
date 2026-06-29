@@ -1,7 +1,6 @@
 import React from "react";
 import { ExitVehicleModalProps } from "@/types/vehicle";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
-import { Button } from "@heroui/button";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Button } from "@heroui/react";
 
 export const ExitVehicleModal: React.FC<ExitVehicleModalProps> = ({
     isOpen,
