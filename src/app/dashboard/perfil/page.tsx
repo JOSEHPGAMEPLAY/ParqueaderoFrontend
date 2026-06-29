@@ -2,10 +2,7 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
-import { Card, CardBody } from '@heroui/card';
-import { Button } from '@heroui/button';
-import { Input } from '@heroui/input';
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/modal';
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Input, Button, Card, CardBody } from '@heroui/react';
 import { UserCircleIcon, PencilIcon, KeyIcon } from '@heroicons/react/24/solid';
 
 export default function Perfil() {

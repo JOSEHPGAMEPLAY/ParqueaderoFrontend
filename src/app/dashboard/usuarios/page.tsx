@@ -2,13 +2,29 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { useUsers } from '@/hooks/useUsers';
-import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/table';
-import { Spinner } from '@heroui/spinner';
-import { Button } from '@heroui/button';
-import { Input } from '@heroui/input';
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/modal';
-import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@heroui/react';
-import { EllipsisVerticalIcon, KeyIcon, TrashIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  Spinner,
+  Button,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Select,
+  SelectItem,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@heroui/react";
+import { EllipsisVerticalIcon, KeyIcon, TrashIcon, MagnifyingGlassIcon, ShieldCheckIcon } from '@heroicons/react/24/solid';
 import { UserProfile } from '@/types/user';
 import ConfirmModal from '@/components/common/ConfirmModal';
 
@@ -27,6 +43,7 @@ export default function Usuarios() {
         error,
         selectedUser,
         searchTerm,
+        selectedRole,
         newPassword,
         confirmPassword,
         modals,
@@ -51,12 +68,26 @@ export default function Usuarios() {
         return false;
     };
 
+    const canChangeRole = (targetUser: UserProfile) => {
+        return (user?.role === 'owner' && targetUser.role !== 'owner') || (user?.role === 'admin' && targetUser.role === 'user') ;
+    };
+
     const renderCell = (userProfile: UserProfile, columnKey: React.Key) => {
         switch (columnKey) {
             case 'username':
                 return <p className="font-medium">{userProfile.username}</p>;
             case 'role':
-                return <p className="capitalize">{userProfile.role}</p>;
+                return (
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
+                        userProfile.role === 'owner'
+                            ? 'bg-warning/10 text-warning'
+                            : userProfile.role === 'admin'
+                            ? 'bg-primary/10 text-primary'
+                            : 'bg-default/10 text-default-foreground'
+                    }`}>
+                        {userProfile.role}
+                    </span>
+                );
             case 'status':
                 return (
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -93,6 +124,15 @@ export default function Usuarios() {
                                     onPress={() => handlers.handleToggleActivation(userProfile)}
                                 >
                                     {userProfile.isActive ? 'Desactivar' : 'Activar'}
+                                </DropdownItem>
+                            ) : null}
+                            {canChangeRole(userProfile) ? (
+                                <DropdownItem
+                                    key="role"
+                                    startContent={<ShieldCheckIcon className="size-4" />}
+                                    onPress={() => handlers.openRoleModal(userProfile)}
+                                >
+                                    Cambiar rol
                                 </DropdownItem>
                             ) : null}
                             {canDelete(userProfile) ? (
@@ -201,6 +241,33 @@ export default function Usuarios() {
                 cancelText="Cancelar"
                 confirmColor="danger"
             />
+
+            <Modal isOpen={modals.isOpenRole} onClose={modals.onCloseRole}>
+                <ModalContent>
+                    <ModalHeader>
+                        Cambiar rol de {selectedUser?.username}
+                    </ModalHeader>
+                    <ModalBody>
+                        <Select
+                            label="Rol"
+                            variant="bordered"         
+                            selectedKeys={selectedRole ? [selectedRole] : []}
+                            onChange={(e) => handlers.setSelectedRole(e.target.value)}
+                        >
+                            <SelectItem key="user">Usuario</SelectItem>
+                            <SelectItem key="admin">Administrador</SelectItem>
+                        </Select>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="success" onPress={handlers.handleRoleChange}>
+                            Guardar
+                        </Button>
+                        <Button color="danger" variant="light" onPress={modals.onCloseRole}>
+                            Cancelar
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </div>
     );
 }

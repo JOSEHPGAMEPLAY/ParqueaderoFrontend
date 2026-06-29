@@ -1,14 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { Input, Button, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Spinner } from "@heroui/react";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/solid";
-import ConfirmModal from "../common/ConfirmModal";
-import { VehiclesTableProps, Vehiculo } from "@/types/vehicle";
-import { useDisclosure } from "@heroui/modal";
+import { VehiclesTableProps } from "@/types/vehicle";
 import { useVehicleActions } from "@/hooks/useVehicleActions";
-import { Input } from "@heroui/input";
-import { Button } from "@heroui/button";
-import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/table";
 import { TABLE_COLUMNS } from "@/constants/vehicleColumns";
-import { Spinner } from "@heroui/spinner";
 import { VehicleTableRow } from "./VehicleTableRow";
 
 export const VehiclesTable: React.FC<VehiclesTableProps> = ({

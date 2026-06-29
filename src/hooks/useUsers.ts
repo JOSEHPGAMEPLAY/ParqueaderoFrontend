@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { UserProfile } from "@/types/user";
 import { useDisclosure } from "@heroui/modal";
-import { getUsers, resetPassword, toggleUserActivation, deleteUser } from "@/services/parkingUsers";
+import { getUsers, resetPassword, toggleUserActivation, deleteUser, updateUser } from "@/services/parkingUsers";
 import { toast } from "react-toastify";
 
 export const useUsers = () => {
@@ -12,9 +12,11 @@ export const useUsers = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedRole, setSelectedRole] = useState('');
 
     const { isOpen: isOpenPassword, onOpen: onOpenPassword, onClose: onClosePassword } = useDisclosure();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
+    const { isOpen: isOpenRole, onOpen: onOpenRole, onClose: onCloseRole } = useDisclosure();
 
     const filteredUsers = useMemo(() => {
         if (!searchTerm.trim()) return users;
@@ -49,6 +51,12 @@ export const useUsers = () => {
         onOpenDelete();
     }, [onOpenDelete]);
 
+    const openRoleModal = useCallback((user: UserProfile) => {
+        setSelectedUser(user);
+        setSelectedRole(user.role);
+        onOpenRole();
+    }, [onOpenRole]);
+
     const handleToggleActivation = async (user: UserProfile) => {
         try {
             await toggleUserActivation(user._id, !user.isActive);
@@ -69,6 +77,24 @@ export const useUsers = () => {
             toast.success('Usuario eliminado exitosamente');
             onCloseDelete();
             setSelectedUser(null);
+        } catch {
+            // error handled in service
+        }
+    };
+
+    const handleRoleChange = async () => {
+        if (!selectedUser || !selectedRole) return;
+        if (selectedRole === selectedUser.role) {
+            onCloseRole();
+            return;
+        }
+        try {
+            await updateUser(selectedUser._id, { role: selectedRole });
+            setUsers(prev => prev.map(u =>
+                u._id === selectedUser._id ? { ...u, role: selectedRole } : u
+            ));
+            toast.success('Rol actualizado exitosamente');
+            onCloseRole();
         } catch {
             // error handled in service
         }
@@ -106,6 +132,7 @@ export const useUsers = () => {
         error,
         selectedUser,
         searchTerm,
+        selectedRole,
         newPassword,
         confirmPassword,
         modals: {
@@ -113,15 +140,20 @@ export const useUsers = () => {
             onClosePassword,
             isOpenDelete,
             onCloseDelete,
+            isOpenRole,
+            onCloseRole,
         },
         handlers: {
             setSearchTerm,
+            setSelectedRole,
             setNewPassword,
             setConfirmPassword,
             openPasswordModal,
             openDeleteModal,
+            openRoleModal,
             handleToggleActivation,
             handleDeleteUser,
+            handleRoleChange,
             handleResetPassword,
         }
     };
