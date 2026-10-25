@@ -1,6 +1,9 @@
-import { UseVehicleActionsProps, VehicleActionType, Vehiculo } from "@/types/vehicle";
+import {
+    UseVehicleActionsProps,
+    VehicleActionType,
+    Vehiculo,
+} from "@/types/vehicle";
 import { useCallback } from "react";
-import { toast } from "react-toastify";
 
 export const useVehicleActions = ({
     onExitVehicle,
@@ -10,11 +13,14 @@ export const useVehicleActions = ({
 
     const handleVehicleAction = useCallback((action: VehicleActionType, vehiculo: Vehiculo) => {
         switch (action) {
-            case 'exit':
-                onExitVehicle(vehiculo, false);
+            case 'exitWithTicket':
+                onExitVehicle(vehiculo, { hasTicket: true });
                 break;
-            case 'ticket':
-                onExitVehicle(vehiculo, true);
+            case 'exitWithoutTicket':
+                onExitVehicle(vehiculo, { hasTicket: false });
+                break;
+            case 'free':
+                onExitVehicle(vehiculo, { hasTicket: true, isFree: true });
                 break;
             case 'comment':
                 onAddComment(vehiculo);
@@ -24,10 +30,9 @@ export const useVehicleActions = ({
                 break;
             default:
                 console.warn('Acción no reconocida', action);
-            
         }
 
     }, [onDeleteVehicle, onExitVehicle, onAddComment]);
 
     return { handleVehicleAction };
-};
+}

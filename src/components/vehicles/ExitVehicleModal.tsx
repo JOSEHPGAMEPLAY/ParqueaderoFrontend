@@ -1,6 +1,7 @@
 import React from "react";
 import { ExitVehicleModalProps } from "@/types/vehicle";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Button } from "@heroui/react";
+import { formatCurrency } from "@/utils/pricing";
 
 export const ExitVehicleModal: React.FC<ExitVehicleModalProps> = ({
     isOpen,
@@ -12,7 +13,12 @@ export const ExitVehicleModal: React.FC<ExitVehicleModalProps> = ({
             <ModalContent>
                 <ModalHeader>Valor a cobrar</ModalHeader>
                 <ModalBody>
-                    <p className="text-lg font-semibold text-center">{price}</p>
+                    <p className="text-2xl font-bold text-success text-center">
+                        {formatCurrency(Number(price))}
+                    </p>
+                    <p className="text-xs text-default-500 text-center">
+                        Calculado con la tarifa central configurada.
+                    </p>
                 </ModalBody>
                 <ModalFooter>
                     <Button color="warning" onPress={onClose}>

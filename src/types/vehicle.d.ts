@@ -16,16 +16,26 @@ export interface VehicleState {
     plateVehicle: string;
 }
 
+export interface ExitOptions {
+    hasTicket: boolean;
+    isFree?: boolean;
+}
+
 export interface VehicleActions {
-    onExitVehicle: (vehiculo: Vehiculo, isFree: boolean) => void;
+    onExitVehicle: (vehiculo: Vehiculo, options: ExitOptions) => void;
     onDeleteVehicle: (vehiculo: Vehiculo) => void;
     onCreateVehicle: () => void;
 }
 
-export type VehicleActionType = 'exit' | 'ticket' | 'comment' | 'delete';
+export type VehicleActionType =
+    | 'exitWithTicket'
+    | 'exitWithoutTicket'
+    | 'free'
+    | 'comment'
+    | 'delete';
 
 export interface UseVehicleActionsProps {
-    onExitVehicle: (vehiculo: Vehiculo, isFree: boolean) => void;
+    onExitVehicle: (vehiculo: Vehiculo, options: ExitOptions) => void;
     onDeleteVehicle: (vehiculo: Vehiculo) => void;
     onAddComment: (vehiculo: Vehiculo) => void;
 }
@@ -48,7 +58,7 @@ export interface VehicleTableRowProps {
     vehiculo: Vehiculo;
     columnKey: React.Key;
     userRole?: string;
-    onAction: (action: VehicleAction, vehiculo: Vehiculo) => void;
+    onAction: (action: VehicleActionType, vehiculo: Vehiculo) => void;
 }
 
 export interface VehiclesTableProps {
@@ -60,7 +70,7 @@ export interface VehiclesTableProps {
     onSearchChange: (value?: string) => void;
     onClear: () => void;
     onOpenCreateModal: () => void;
-    onExitVehicle: (vehiculo: Vehiculo, isFree: boolean) => void;
+    onExitVehicle: (vehiculo: Vehiculo, options: ExitOptions) => void;
     onDeleteVehicle: (vehiculo: Vehiculo) => void;
     onAddComment: (vehiculo: Vehiculo) => void;
 }
