@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Vehiculo } from "@/types/vehicle";
+import { ExitOptions, Vehiculo } from "@/types/vehicle";
 import { useDisclosure } from "@heroui/modal";
 import { addVehicle, deleteVehicle, exitVehicle, getVehicles } from "@/services/parkingVehicles";
 import { calculateTotal } from "@/services/parkingRegisters";
@@ -48,10 +48,10 @@ export const useVehicles = () => {
     }, [vehiculos, filterValue]);
 
     // Handlers
-    const openExitVehicle = useCallback(async (vehiculo: Vehiculo, isFree: boolean) => {
+    const openExitVehicle = useCallback(async (vehiculo: Vehiculo, options: ExitOptions) => {
         try {
             setSelectedVehiculo(vehiculo);
-            const salida = await exitVehicle(vehiculo.plateNumber, isFree);
+            const salida = await exitVehicle(vehiculo.plateNumber, options);
             const updatedVehicles = await getVehicles(id);
             setVehiculos(updatedVehicles);
             setPrice(salida.price);
