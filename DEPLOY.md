@@ -6,7 +6,7 @@ Aplicacion Next.js 14 (App Router, TypeScript estricto, HeroUI) que se despliega
 
 | Requisito | Detalle |
 |---|---|
-| Node.js | 22 en Vercel. Localmente, Next.js 14.2 exige Node 18.17 o superior; la build fue verificada con Node 22.14.0. |
+| Node.js | 24 LTS (Krypton) en Vercel y en local. Next.js 14.2 exige Node 18.17 o superior; la build fue verificada con Node 24.22.1. |
 | Backend desplegado | El frontend no funciona sin la API: todo el estado viene de ella. |
 | `package-lock.json` | Versionado. La instalacion en Vercel respeta el lockfile. |
 | Dominio del frontend autorizado en el backend | Debe estar en `CLIENT_URL` del backend. Los dominios `*.vercel.app` se aceptan sin configuracion adicional. |
@@ -32,7 +32,7 @@ Puntos que rompen el despliegue:
 ## Publicacion en Vercel
 
 1. Importar el repositorio del frontend. Framework preset: **Next.js** (autodetectado). Directorio raiz: la raiz del repositorio.
-2. En Settings, General, Node.js Version, seleccionar **22.x**.
+2. En Settings, General, Node.js Version, seleccionar **24.x**. `engines.node` en `package.json` ya lo fija; el panel debe coincidir.
 3. En Environment Variables, crear `NEXT_PUBLIC_API_URL` con el dominio de la API mas `/api`, en Production, Preview y Development. En Preview conviene un backend de preview distinto.
 4. Autorizar el dominio resultante en el backend: agregarlo a `CLIENT_URL` si no es `*.vercel.app`, y redesplegar el backend para que tome la variable.
 5. Desplegar desde `main`. La salida de build esperada lista 11 rutas de aplicacion (`/`, `/auth/login`, `/auth/register`, `/auth/logout`, `/dashboard`, `/dashboard/analiticas`, `/dashboard/configuracion`, `/dashboard/perfil`, `/dashboard/usuarios`, `/dashboard/vehiculos/[id]`, `/dashboard/vehiculos/[id]/comentarios/[vehicleId]`), la pagina interna `/_not-found` y la ruta estatica `/icon.png`. Las dos rutas de vehiculos son dinamicas (`ƒ`); el resto se prerenderiza.
