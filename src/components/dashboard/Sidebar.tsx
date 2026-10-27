@@ -11,6 +11,8 @@ import {
     ArrowRightOnRectangleIcon,
     Bars3Icon,
     XMarkIcon,
+    ChartBarIcon,
+    Cog6ToothIcon,
 } from '@heroicons/react/24/solid';
 import { Button } from '@heroui/button';
 
@@ -27,6 +29,8 @@ export const Sidebar = () => {
 
     if (user?.role === 'admin' || user?.role === 'owner') {
         navItems.push({ href: '/dashboard/usuarios', label: 'Usuarios', icon: UsersIcon, roles: ['admin', 'owner'] });
+        navItems.push({ href: '/dashboard/analiticas', label: 'Analíticas', icon: ChartBarIcon, roles: ['admin', 'owner'] });
+        navItems.push({ href: '/dashboard/configuracion', label: 'Configuración', icon: Cog6ToothIcon, roles: ['admin', 'owner'] });
     }
 
     const isActive = (href: string) => {

@@ -48,9 +48,16 @@ export async function deleteVehicle(_id: any) {
     }
 };
 
-export async function exitVehicle(plateNumber: any, isFree:boolean) {
+export async function exitVehicle(
+    plateNumber: string,
+    options: { hasTicket?: boolean; isFree?: boolean } = {}
+) {
     try {
-        const res = await api.put("/parking/calculatePrice", { plateNumber: plateNumber, isFree: isFree });
+        const res = await api.put("/parking/calculatePrice", {
+            plateNumber,
+            isFree: options.isFree ?? false,
+            hasTicket: options.hasTicket ?? true,
+        });
         return res.data;
     } catch (error) {
         console.error('Error fetching data:', error);

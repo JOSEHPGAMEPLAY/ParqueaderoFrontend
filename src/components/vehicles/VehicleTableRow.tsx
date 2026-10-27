@@ -1,7 +1,7 @@
 import React from "react";
 import { VehicleActionType, VehicleTableRowProps, Vehiculo } from "@/types/vehicle";
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@heroui/react';
-import { ChatBubbleLeftIcon, CurrencyDollarIcon, EllipsisVerticalIcon, TicketIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { ChatBubbleLeftIcon, CurrencyDollarIcon, EllipsisVerticalIcon, GiftTopIcon, TicketIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { formatTime } from "@/utils/format";
 
 export const VehicleTableRow: React.FC<VehicleTableRowProps> = ({
@@ -29,30 +29,43 @@ export const VehicleTableRow: React.FC<VehicleTableRowProps> = ({
                             onAction={(key) => onAction(key as VehicleActionType, vehiculo)}
                         >
                             <DropdownItem
-                                key="exit"
+                                key="exitWithTicket"
                                 className="text-success"
                                 color="success"
                                 startContent={
                                     <CurrencyDollarIcon 
-                                        aria-label="Salida sin ticket calcular precio" 
+                                        aria-label="Salida con tiquete calcular precio" 
                                         className="w-4 h-4" 
                                     />
                                 }
                             >
-                                Cobrar
+                                Cobrar con tiquete
                             </DropdownItem>
                             <DropdownItem
-                                    key="ticket"
-                                    className="text-primary"
-                                color="primary"
+                                key="exitWithoutTicket"
+                                className="text-warning"
+                                color="warning"
                                 startContent={
                                     <TicketIcon 
-                                        aria-label="Salida con ticket, salida gratis"  
+                                        aria-label="Salida sin tiquete calcular precio"  
                                         className="w-4 h-4" 
                                     />
                                 }
                             >
-                                Ticket
+                                Cobrar sin tiquete
+                            </DropdownItem>
+                            <DropdownItem
+                                key="free"
+                                className="text-primary"
+                                color="primary"
+                                startContent={
+                                    <GiftTopIcon 
+                                        aria-label="Salida sin cobro"  
+                                        className="w-4 h-4" 
+                                    />
+                                }
+                            >
+                                Salida gratis
                             </DropdownItem>
                             <DropdownItem
                                 key="comment"
